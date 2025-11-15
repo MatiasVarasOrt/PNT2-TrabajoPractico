@@ -13,7 +13,8 @@ export default function TopListSection({
   title,
   items = [],
   accentColor = "#e74c3c",
-  type, //Agregué para identificar el tipo de item (cancion, artista o álbum)
+  onEdit,
+  onDelete,
 }) {
   const { addToLibrary } = useLibrary();
   const { playlists, addToPlaylist, createPlaylist } = usePlaylists();
@@ -45,63 +46,75 @@ export default function TopListSection({
         <h2>{title}</h2>
       </header>
       <ol className={styles.list}>
-        {items.map((item, index) => (
-          <li key={item.id ?? `${item.name}-${index}`} className={styles.item}>
-            <div className={styles.itemInfo}>
-              <span className={styles.rank}>#{item.rank ?? index + 1}</span>
-              {item.image ? (
-                <div className={styles.thumbnail}>
-                  <Image
-                    src={item.image}
-                    alt={item.name || item.title || "Item"}
-                    width={56}
-                    height={56}
-                    sizes="56px"
-                    className={styles.thumbnailImage}
-                  />
-                </div>
-              ) : null}
-              <div className={styles.textBlock}>
-                <p className={styles.itemTitle}>{item.name || item.title}</p>
-                {item.artist ? (
-                  <p className={styles.itemSubtitle}>{item.artist}</p>
-                ) : item.subtitle ? (
-                  <p className={styles.itemSubtitle}>{item.subtitle}</p>
+        {items.map((item, index) => {
+          const metricContent = item.popularity
+            ? `🔥 ${item.popularity}`
+            : item.followers
+            ? `👥 ${item.followers.toLocaleString()}`
+            : item.metric
+            ? item.metric
+            : null;
+
+          return (
+            <li key={item.id ?? `${item.name}-${index}`} className={styles.item}>
+              <div className={styles.itemInfo}>
+                <span className={styles.rank}>#{item.rank ?? index + 1}</span>
+                {item.image ? (
+                  <div className={styles.thumbnail}>
+                    <Image
+                      src={item.image}
+                      alt={item.name || item.title || 'Item'}
+                      width={56}
+                      height={56}
+                      sizes="56px"
+                      className={styles.thumbnailImage}
+                    />
+                  </div>
                 ) : null}
+                <div className={styles.textBlock}>
+                  <p className={styles.itemTitle}>{item.name || item.title}</p>
+                  {item.artist ? (
+                    <p className={styles.itemSubtitle}>{item.artist}</p>
+                  ) : item.subtitle ? (
+                    <p className={styles.itemSubtitle}>{item.subtitle}</p>
+                  ) : null}
+                </div>
               </div>
-            </div>
-            {item.popularity ? (
-              <span className={styles.metric}>🔥 {item.popularity}</span>
-            ) : item.followers ? (
-              <span className={styles.metric}>
-                👥 {item.followers.toLocaleString()}
-              </span>
-            ) : item.metric ? (
-              <span className={styles.metric}>{item.metric}</span>
-            ) : null}
 
-            <div className={styles.buttonGroup}>
-              {type === "track" && (
-                <button
-                  className={styles.saveButton}
-                  onClick={() => setSelectedTrack(item)}
-                >
-                  ➕ Playlist
-                </button>
-              )}
-                  
-              
-              <button
-                className={styles.saveButton}
-                onClick={() => addToLibrary(item)}
-              >
-                ➕ Biblioteca
-              </button>
+              <div className={styles.itemRight}>
+                {metricContent ? (
+                  <span className={styles.metric}>{metricContent}</span>
+                ) : null}
 
+                <div className={styles.itemActions}>
+                  <button
+                    className={styles.saveButton}
+                    onClick={() => addToLibrary(item)}
+                  >
+                    Guardar
+                  </button>
+                  {typeof onEdit === "function" && (
+                    <button
+                      className={styles.editButton}
+                      onClick={() => onEdit(item)}
+                    >
+                      Editar
+                    </button>
+                  )}
+                  {typeof onDelete === "function" && (
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => onDelete(item)}
+                    >
+                      Eliminar
+                    </button>
+                  )}
+                </div>
 
-            </div>
-          </li>
-        ))}
+              </div>
+            </li>
+          );
+        })}
       </ol>
 
       <AddToPlaylistModal

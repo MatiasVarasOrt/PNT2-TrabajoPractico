@@ -6,6 +6,7 @@ import styles from "./SidebarNav.module.css";
 
 const navItems = [
   { label: "Inicio", href: "/", icon: "♪" },
+  { label: "General", href: "/general", icon: "★" },
   { label: "Mi Biblioteca", href: "/library", icon: "♫" },
   { label: "Playlists", href: "/playlist", icon: "♬" },
   { label: "Artistas", href: "/artists", icon: "🧑‍🎤" },
