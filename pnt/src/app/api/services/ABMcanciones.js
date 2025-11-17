@@ -89,18 +89,43 @@ async function actualizarCancion(id, payload) {
 
 
 async function eliminarCancion(id, artistId) {
-  const path = resolveCancionPath(id, artistId);
+  const paths = [];
 
-  const response = await fetch(`${MOCK_API_BASE_URL}${path}`, {
-    method: "DELETE",
-  });
+  if (artistId) {
+    paths.push(resolveCancionPath(id, artistId));
+  }
+  paths.push(resolveCancionPath(id));
 
-  if (!response.ok) {
+  let lastError = null;
+
+  for (let i = 0; i < paths.length; i++) {
+    const path = paths[i];
+    const response = await fetch(`${MOCK_API_BASE_URL}${path}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      return response.status === 204 ? null : response.json();
+    }
+
+    if (response.status === 404) {
+      if (i < paths.length - 1) {
+        continue;
+      }
+      return null; //hay un error en mockapi al eliminar, canciones, hay algunas canciones que figuran en la UI que no estan mas en la data de mockapi, por ende cuando se intenta eliminar no anda
+                  // para manejar esto y no devolver un 404 que es directo de la api de mockapi, o sea del servidor de ellos, ya que no existe, obte por devolver null y listo
+    }
+
     const detalles = await response.text();
-    throw new Error(`Error ${response.status}: ${detalles}`);
+    lastError = new Error(`Error ${response.status}: ${detalles}`);
+    break;
   }
 
-  return response.status === 204 ? null : response.json();
+  if (lastError) {
+    throw lastError;
+  }
+
+  return null;
 }
 
 export {

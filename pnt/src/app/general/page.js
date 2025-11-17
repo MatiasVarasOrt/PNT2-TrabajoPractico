@@ -10,6 +10,7 @@ import {
   eliminarCancion,
   actualizarCancion,
 } from "@/app/api/services/ABMcanciones";
+import { getAllArtists } from "@/app/api/spotify_token/services/ABMartistas";
 
 export default function GeneralPage() {
   const [songs, setSongs] = useState([]);
@@ -25,18 +26,69 @@ export default function GeneralPage() {
   const fetchSongs = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await obtenerCanciones();
-      const normalizedSongs = (data ?? []).map((song, index) => ({
-        id: song.id ?? `song-${index}`,
-        name: song.name ?? song.title ?? song.titulo ?? "Canción sin nombre",
-        artist: song.artist ?? song.autor ?? song.artistName ?? "Artista desconocido",
-        subtitle: song.album ?? song.genero ?? undefined,
-        image: song.image ?? song.cover ?? song.portada ?? null,
-        popularity: song.popularity ?? null,
-        metric: song.duration ? `${song.duration} min` : undefined,
-        rank: index + 1,
-        artistId: song.artistaId ?? song.artistId ?? song.idArtista ?? null,
-      }));
+
+      const songsResponse = await obtenerCanciones();
+
+      let artistsResponse = [];
+      try {
+        artistsResponse = await getAllArtists();
+      } catch (artistsError) {
+        console.log("No se pudieron obtener los artistas", artistsError);
+      }
+
+      const artistMap = new Map();
+
+      (artistsResponse || []).forEach((artist) => {
+        console.log("viendo artista", artist);
+        if (artist?.id && artist?.name) {
+          artistMap.set(String(artist.id), artist.name);
+        }
+      });
+
+
+      const normalizedSongs = (songsResponse ?? []).map((song, index) => {
+        const resolveSongArtistId = () => {
+          const rawId =
+            song?.artistaId ??
+            song?.artistId ??
+            song?.idArtista ??
+            song?.artista?.id ??
+            song?.artist?.id ??
+            null;
+
+          if (rawId === undefined || rawId === null) {
+            return null;
+          }
+          return String(rawId);
+        };
+
+        const artistId = resolveSongArtistId();
+        const directArtistName = typeof song?.artist === "string" && song.artist.length > 0 ? song.artist : null;
+
+        const lookupArtistName = artistId ? artistMap.get(artistId) : null;
+
+        const resolvedArtistName =
+          (typeof directArtistName === "string" && directArtistName.length > 0
+            ? directArtistName
+            : null) ||
+          (typeof lookupArtistName === "string" && lookupArtistName.length > 0
+            ? lookupArtistName
+            : null) ||
+          "Artista desconocido";
+
+        return {
+          id: song?.id ?? `song-${index}`,
+          name: song?.name ?? song?.title ?? song?.titulo ?? "Canción sin nombre",
+          artist: resolvedArtistName,
+          subtitle: song?.album ?? song?.genero ?? undefined,
+          image: song?.image ?? song?.cover ?? song?.portada ?? null,
+          popularity: song?.popularity ?? null,
+          metric: song?.duration ? `${song.duration} min` : undefined,
+          rank: index + 1,
+          artistId,
+        };
+      });
+
       setSongs(normalizedSongs);
       setError(null);
     } catch (err) {
@@ -52,7 +104,7 @@ export default function GeneralPage() {
   }, [fetchSongs]); //se ejecuta cuando cambia algo en el fecht
 
   const handleCreateSong = async (event) => {
-    event?.preventDefault?.();
+    event?.preventDefault?.(); //chequea que exista el evento y la funcion
 
     const trimmedName = newSong.name.trim();
     if (!trimmedName) {
@@ -122,12 +174,8 @@ export default function GeneralPage() {
       return;
     }
 
-    const artistId = song?.artistId ?? song?.artistaId ?? song?.idArtista;
-    if (!artistId) {
-      console.warn("No se puede eliminar la canción sin artistId", song);
-      alert("No se puede eliminar la canción porque no tiene artista asociado.");
-      return;
-    }
+    const artistId =
+      song?.artistId ?? song?.artistaId ?? song?.idArtista ?? null;
 
     const songName = song?.name ?? "esta canción";
 
@@ -137,7 +185,7 @@ export default function GeneralPage() {
 
     (async () => {
       try {
-        await eliminarCancion(songId, artistId);
+        await eliminarCancion(songId, artistId || undefined);
         await fetchSongs();
         alert("Canción eliminada correctamente.");
       } catch (err) {
