@@ -1,14 +1,20 @@
 const DEFAULT_MOCK_API_BASE =
   "https://690160fdff8d792314bd3f83.mockapi.io/api/v1";
+const ARTISTAS_RESOURCE = "/artistas";
 const CANCIONES_RESOURCE = "/canciones";
 const MOCK_API_BASE_URL =
   process.env.NEXT_PUBLIC_MOCK_API_BASE?.replace(/\/$/, "") ||
   DEFAULT_MOCK_API_BASE;
 
-function resolveCancionPath(id) {
+function resolveCancionPath(id, artistId) {
   if (!id) {
     throw new Error("Se requiere un id");
   }
+
+  if (artistId) {
+    return `${ARTISTAS_RESOURCE}/${artistId}${CANCIONES_RESOURCE}/${id}`;
+  }
+
   return `${CANCIONES_RESOURCE}/${id}`;
 }
 
@@ -82,8 +88,8 @@ async function actualizarCancion(id, payload) {
 }
 
 
-async function eliminarCancion(id) {
-  const path = resolveCancionPath(id);
+async function eliminarCancion(id, artistId) {
+  const path = resolveCancionPath(id, artistId);
 
   const response = await fetch(`${MOCK_API_BASE_URL}${path}`, {
     method: "DELETE",

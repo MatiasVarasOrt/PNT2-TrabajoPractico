@@ -35,6 +35,7 @@ export default function GeneralPage() {
         popularity: song.popularity ?? null,
         metric: song.duration ? `${song.duration} min` : undefined,
         rank: index + 1,
+        artistId: song.artistaId ?? song.artistId ?? song.idArtista ?? null,
       }));
       setSongs(normalizedSongs);
       setError(null);
@@ -48,14 +49,14 @@ export default function GeneralPage() {
 
   useEffect(() => {
     fetchSongs();
-  }, [fetchSongs]);
+  }, [fetchSongs]); //se ejecuta cuando cambia algo en el fecht
 
   const handleCreateSong = async (event) => {
     event?.preventDefault?.();
 
     const trimmedName = newSong.name.trim();
     if (!trimmedName) {
-      alert("El nombre no puede estar vacío.");
+      alert("El nombre no puede estar vacio");
       return;
     }
 
@@ -72,7 +73,7 @@ export default function GeneralPage() {
       });
       await fetchSongs();
       setNewSong({ name: "", artist: "", album: "", image: "" });
-      alert("Canción creada correctamente.");
+      alert("Canción creada correctamente");
     } catch (err) {
       console.error("No se pudo crear la cancion", err);
       alert("No se pudo crear la canción. Prueba nuevamente más tarde.");
@@ -114,8 +115,17 @@ export default function GeneralPage() {
 
   const handleDeleteSong = (song) => {
     const songId = song?.id;
+    console.log("Eliminar canción con ID:", songId);
     if (!songId) {
+      console.log("No se puede eliminar la canción sin un ID válido.");
       alert("Esta canción no tiene un ID valid.");
+      return;
+    }
+
+    const artistId = song?.artistId ?? song?.artistaId ?? song?.idArtista;
+    if (!artistId) {
+      console.warn("No se puede eliminar la canción sin artistId", song);
+      alert("No se puede eliminar la canción porque no tiene artista asociado.");
       return;
     }
 
@@ -127,7 +137,7 @@ export default function GeneralPage() {
 
     (async () => {
       try {
-        await eliminarCancion(songId);
+        await eliminarCancion(songId, artistId);
         await fetchSongs();
         alert("Canción eliminada correctamente.");
       } catch (err) {
