@@ -13,6 +13,7 @@ export default function TopListSection({
   title,
   items = [],
   accentColor = "#e74c3c",
+  type,
   onEdit,
   onDelete,
 }) {
@@ -87,6 +88,14 @@ export default function TopListSection({
                 ) : null}
 
                 <div className={styles.itemActions}>
+                  {type === "track" && (
+                  <button
+                    className={styles.addButton}
+                    onClick={() => setSelectedTrack(item)}
+                  >
+                  ➕ Playlist
+                  </button>
+                  )}
                   <button
                     className={styles.saveButton}
                     onClick={() => addToLibrary(item)}
@@ -124,9 +133,9 @@ export default function TopListSection({
     addToPlaylist(playlistId, selectedTrack);
     setSelectedTrack(null);
   }}
-  onCreatePlaylist={(name, track) => {
-  const id = createPlaylist(name, "", [track]); 
-  return id; 
+  onCreatePlaylist={(name) => {
+  const id = createPlaylist(name);
+  return id;
 }}
   onClose={() => setSelectedTrack(null)}
 />

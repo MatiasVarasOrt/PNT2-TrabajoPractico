@@ -208,6 +208,7 @@ export default function GeneralPage() {
               <TopListSection
                 title="Listado general de canciones"
                 items={songs}
+                type ="track"
                 accentColor="#2ecc71"
                 onEdit={handleEditSong}
                 onDelete={handleDeleteSong}
