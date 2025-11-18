@@ -66,7 +66,7 @@ export default function Register() {
     if (!validateForm()) {
       return;
     }
-debugger
+    
     try {
       const result = await register({
         name: formData.name,
