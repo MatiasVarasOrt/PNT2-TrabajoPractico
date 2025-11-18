@@ -1,16 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/contexts/AuthProvider.jsx';
 import { useRouter } from 'next/navigation';
 import styles from './Login.module.css';
 
 export default function Login() {
-  const { login, loading } = useAuth();
+  const { login, loading, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push('/');
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

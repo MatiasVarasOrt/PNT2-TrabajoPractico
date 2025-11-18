@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import styles from './Login.module.css';
 
 export default function Register() {
-  const { register, loading } = useAuth();
+  const { register, loading, user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     lastname: '',
@@ -17,10 +17,16 @@ export default function Register() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleChange = (e) => {
+  useEffect(() => {
+    if (user) {
+      router.push('/');
+    }
+  }, [user, router]);
+
+  const handleChange = (event) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [event.target.name]: event.target.value
     });
   };
 
@@ -66,7 +72,7 @@ export default function Register() {
     if (!validateForm()) {
       return;
     }
-    
+
     try {
       const result = await register({
         name: formData.name,
