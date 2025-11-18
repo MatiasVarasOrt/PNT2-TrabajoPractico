@@ -7,6 +7,14 @@
   padding: 20px;
 }
 
+.appName {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #ffffff;
+}
+
 .loginCard {
   background: white;
   border-radius: 12px;
