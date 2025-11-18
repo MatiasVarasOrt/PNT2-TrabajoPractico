@@ -90,7 +90,7 @@ export default function TopListSection({
                 <div className={styles.itemActions}>
                   {type === "track" && (
                   <button
-                    className={styles.addButton}
+                    className={styles.saveButton}
                     onClick={() => setSelectedTrack(item)}
                   >
                   ➕ Playlist
@@ -100,7 +100,7 @@ export default function TopListSection({
                     className={styles.saveButton}
                     onClick={() => addToLibrary(item)}
                   >
-                    Guardar
+                  ➕ Biblioteca
                   </button>
                   {typeof onEdit === "function" && (
                     <button

@@ -1,17 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { usePlaylists } from "@/app/contexts/PlaylistContext";
 import styles from "../page.module.css";
 import Link from "next/link";
+import CreatePlaylistModal from "@/components/CreatePlaylistModal";
 
 
 export default function PlaylistsPage() {
   const { playlists, deletePlaylist, createPlaylist } = usePlaylists();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  function handleCreate() {
-    const name = prompt("Nombre de la playlist:");
-    if (!name) return;
+  function handleCreate(name) {
     createPlaylist(name);
   }
 
@@ -19,26 +20,37 @@ export default function PlaylistsPage() {
     <DashboardLayout>
       <div className={styles.page}>
         <div className={styles.shell}>
-          <main style={{ padding: "2rem" }}>
-            <h1>Playlists</h1>
+          <main className={styles.main}>
+            <section className={styles.hero}>
+              <p className={styles.eyebrow}>Kapelle</p>
+              <h1>Playlists</h1>
+              <p className={styles.description}>
+                Crea, organiza y gestiona tus playlists personalizadas.
+              </p>
 
             <button
-              onClick={handleCreate}
-              style={{
-                marginTop: "1rem",
-                marginBottom: "1.5rem",
-                padding: "0.5rem 1rem",
-                cursor: "pointer"
-              }}
+              onClick={() => setIsModalOpen(true)}
+              className={styles.createButton}
             >
               Crear playlist
             </button>
+            </section>
 
-            {playlists.length === 0 && <p>No creaste ninguna playlist.</p>}
+            <section className={styles.sections}>
+              {playlists.length === 0 && (
+                <div className={styles.emptyState}>
+                  <p>Aún no creaste ninguna playlist.</p>
+                </div>
+              )}
 
-            <ul style={{ marginTop: "1rem" }}>
+            <ul style={{ marginTop: "1.2rem", listStyle: "none", padding: 0 }}>
               {playlists.map((p) => (
-                <li key={p.id} style={{ marginBottom: "0.8rem" }}>
+                <li key={p.id} style={{
+                    marginBottom: "0.9rem",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                  }}>
                     {/* Linkeo a la página individual de la playlist */}
                   <Link
                     href={`/playlist/${p.id}`}     
@@ -47,17 +59,28 @@ export default function PlaylistsPage() {
                     {p.name}
                   </Link>
 
-                  ({p.songs.length} canciones)
+                  <span style={{ opacity: 0.7 }}>
+                    ({p.songs.length} canciones)
+                  </span>
 
                   <button
                     onClick={() => deletePlaylist(p.id)}
-                    style={{ marginLeft: "1rem" }}
+                    className={styles.deleteButton}
                   >
                     Eliminar
                   </button>
                 </li>
               ))}
             </ul>
+          </section>
+
+            <CreatePlaylistModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              onCreate={(name) => handleCreate(name)}
+            />
+
+
           </main>
         </div>
       </div>

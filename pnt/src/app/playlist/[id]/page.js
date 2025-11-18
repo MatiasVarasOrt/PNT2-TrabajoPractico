@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { usePlaylists } from "@/app/contexts/PlaylistContext";
 import DashboardLayout from "@/components/DashboardLayout";
+import styles from "../../page.module.css";
 
 export default function PlaylistDetailPage() {
   const { id } = useParams(); 
@@ -28,7 +29,7 @@ export default function PlaylistDetailPage() {
         <p>{playlist.description}</p>
 
         <button
-          style={{ margin: "1rem 0", background: "red", color: "white" }}
+          className={styles.deleteButton}
           onClick={() => deletePlaylist(playlist.id)}
         >
           Eliminar playlist

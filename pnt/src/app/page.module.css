@@ -184,7 +184,7 @@
 .editButton,
 .deleteButton {
   background: none;
-  border: none; /* Quitamos el borde */
+  border: none; 
   padding: 0;
   cursor: pointer;
   font-family: var(--font-geist-sans);
@@ -198,4 +198,8 @@
 
 .createButton:hover, .editButton:hover, .deleteButton:hover {
   color: #fff;
+}
+
+.noDataMessage {
+  margin-top: 48px;
 }

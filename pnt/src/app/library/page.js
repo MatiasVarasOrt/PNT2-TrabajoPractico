@@ -10,27 +10,43 @@ export default function LibraryPage() {
     <DashboardLayout>
       <div className={styles.page}>
         <div className={styles.shell}>
-          <main style={{ padding: "2rem" }}>
-      <h1>Mi Biblioteca</h1>
+          <main className={styles.main}>
+            
+            
+            <header className={styles.hero}>
+              <p className={styles.eyebrow}>Kapelle</p>
+              <h1>Mi Biblioteca</h1>
+              <p className={styles.description}>
+                Todo lo que guardaste en un solo lugar.
+              </p>
+            </header>
 
-      {libraryItems.length === 0 && (
-        <p>No guardaste nada todavía.</p>
-      )}
+            
+            {libraryItems.length === 0 && (
+              <div className={styles.emptyState}>
+                <h2>No guardaste nada todavía.</h2>
+              </div>
+            )}
 
-      <ul style={{ marginTop: "1.5rem" }}>
-        {libraryItems.map((item) => (
-          <li key={item.id} style={{ marginBottom: "0.5rem" }}>
-            {item.name} — {item.artist}
-            <button
-              style={{ marginLeft: "1rem" }}
-              onClick={() => removeFromLibrary(item.id)}
-            >
-              Eliminar
-            </button>
-          </li>
-        ))}
-      </ul>
-    </main>
+            
+            {libraryItems.length > 0 && (
+              <div className={styles.sections}>
+                {libraryItems.map((item) => (
+                  <div key={item.id} className={styles.card}>
+                    <p><strong>{item.name}</strong></p>
+                    <p style={{ opacity: 0.7 }}>{item.artist}</p>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => removeFromLibrary(item.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+          </main>
         </div>
       </div>
     </DashboardLayout>
