@@ -60,8 +60,38 @@ export const updateArtist = async (id, data) => {
 
 
 export const deleteArtist = async (id) => {
-  const response = await fetch(`${API_URL}/${id}`, {
-    method: "DELETE",
-  });
-  return response.ok;
+  try {
+    
+    const songs = await getArtistSongs(id);
+    
+    
+    if (songs && songs.length > 0) {
+      for (const song of songs) {
+        try {
+          const response = await fetch(`${API_URL}/${id}/canciones/${song.id}`, {
+            method: "DELETE",
+          });
+          if (!response.ok) {
+            console.warn(`Advertencia: No se pudo eliminar la canción ${song.id}`);
+          }
+        } catch (err) {
+          console.warn(`Error al eliminar canción ${song.id}:`, err);
+        }
+      }
+    }
+    
+    // Finalmente eliminar el artista
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Error al eliminar el artista con id ${id}`);
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Error en deleteArtist:", error);
+    throw error;
+  }
 };
