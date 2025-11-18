@@ -2,14 +2,16 @@
 
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import authService from '../services/authService';
 
 const AuthContext = createContext()
+
 export const useAuth = () => useContext(AuthContext) 
 
 
 export default function AuthProvider({children}) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const router = useRouter()
@@ -18,8 +20,7 @@ export default function AuthProvider({children}) {
     try {
       const userStorage = localStorage.getItem("user");
       const isAuthStorage = localStorage.getItem("isAuthenticated");
-      console.log("userStorage: ", userStorage);
-      console.log("isAuthStorage: ", isAuthStorage);
+
       if (userStorage) {
         setUser(JSON.parse(userStorage));
       }
@@ -28,39 +29,50 @@ export default function AuthProvider({children}) {
       }
     } catch (error) {
       console.log("Error loading auth from localStorage:", error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
   const login = async(userData) => {
-    console.log("login userData: ", userData);
     setLoading(true);
     
     try {
-      console.log("userData: ", userData);
+      const result = await authService.login(userData.email, userData.password);
       
-      const resp = await fetch("https://690160fdff8d792314bd3f83.mockapi.io/api/v1/users")
-      const data = await resp.json();
-
-      console.log("data: ", data);
-      
-      const userFind = data.find(u => u.email === userData.email && u.password === userData.password)
-
-      console.log("user: ", userFind);
-      
-      if(userFind){
-        setUser(userFind)
+      if (result.success) {
+        setUser(result.user)
         setIsAuthenticated(true)
-        localStorage.setItem("user", JSON.stringify(userFind))
+        localStorage.setItem("user", JSON.stringify(result.user))
         localStorage.setItem("isAuthenticated", "true")
         router.push("/")
-        return { success: true, user: userFind }
-      } else {
-        setIsAuthenticated(false)
-        return { success: false, error: "Usuario o contraseña incorrectos" }
       }
+      return result;
+
     } catch (error) {
-      console.log("Error en login:", error);
-      return { success: false, error: "Error inesperado. Intenta nuevamente." }
+      return { success: false, error: "Error de conexión" }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const register = async(userData) => {
+    setLoading(true);
+    
+    try {
+      const result = await authService.register(userData);
+      
+      if (result.success) {
+        setUser(result.user)
+        setIsAuthenticated(true)
+        localStorage.setItem("user", JSON.stringify(result.user))
+        localStorage.setItem("isAuthenticated", "true")
+        router.push("/")
+      }
+      
+      return result;
+    } catch (error) {
+      return { success: false, error: "Error al crear la cuenta" }
     } finally {
       setLoading(false);
     }
@@ -68,14 +80,14 @@ export default function AuthProvider({children}) {
 
   const logout = () => {
     setUser(null)
-    setIsAuthenticated(null)
+    setIsAuthenticated(false)
     localStorage.removeItem("user")
     localStorage.removeItem("isAuthenticated")
     router.push("/login")
   }
 
   return (
-    <AuthContext.Provider value={{user, loading, login, isAuthenticated}}>
+    <AuthContext.Provider value={{user, loading, login, register, logout, isAuthenticated}}>
         {children}
     </AuthContext.Provider>
   )

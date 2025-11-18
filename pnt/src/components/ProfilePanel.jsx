@@ -2,19 +2,23 @@
 
 import { useState, useRef, useEffect } from "react";
 import styles from "./ProfilePanel.module.css";
+import { useAuth } from "@/app/contexts/AuthProvider.jsx";
+import { useRouter } from "next/navigation";
 
 const menuOptions = [
-  { label: "Cuenta", description: "Gestiona tu plan y preferencias", icon: "⚙️" },
+  { label: "Cuenta", description: "Gestiona tu cuenta", icon: "⚙️", action: "profile" },
   { label: "Notificaciones", description: "Configura alertas y avisos", icon: "🔔" },
   { label: "Cerrar sesión", description: "Salir de tu cuenta", icon: "🚪", action: "logout" },
 ];
 
 export default function ProfilePanel() {
+  const { logout, user } = useAuth();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Cerrar menú al hacer clic fuera
   useEffect(() => {
+    console.log("Usuario actual:", user);
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsOpen(false);
@@ -28,10 +32,11 @@ export default function ProfilePanel() {
   }, [isOpen]);
 
   const handleOptionClick = (option) => {
+    console.log(option.action);
     if (option.action === "logout") {
-      // Aquí puedes agregar tu lógica de cierre de sesión
-      console.log("Cerrando sesión...");
-      // Por ejemplo: router.push('/login') o llamar a una función de logout
+      logout();
+    } else if (option.action === "profile") {
+      router.push("/profile");
     } else {
       console.log(`Abriendo ${option.label}`);
     }
@@ -46,16 +51,16 @@ export default function ProfilePanel() {
         aria-label="Menú de perfil"
         aria-expanded={isOpen}
       >
-        <div className={styles.avatar}>MP</div>
+        <div className={styles.avatar}>{user?.name?.charAt(0).toUpperCase()}</div>
       </button>
 
       {isOpen && (
         <div className={styles.dropdown}>
           <div className={styles.userInfo}>
-            <div className={styles.avatarLarge}>MP</div>
+            <div className={styles.avatarLarge}>{user?.name?.charAt(0).toUpperCase()}</div>
             <div>
-              <p className={styles.name}>Maria Perez</p>
-              <p className={styles.email}>maria.perez@email.com</p>
+              <p className={styles.name}>{user?.name}</p>
+              <p className={styles.email}>{user?.email}</p>
             </div>
           </div>
 

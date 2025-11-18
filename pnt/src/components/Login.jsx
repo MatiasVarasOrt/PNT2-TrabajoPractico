@@ -34,57 +34,70 @@ export default function Login() {
 
   return (
     <div className={styles.loginContainer}>
-      <div className={styles.loginCard}>
-        <h1 className={styles.title}>Iniciar Sesión</h1>
-        
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.inputGroup}>
-            <label htmlFor="email" className={styles.label}>
-              Correo Electrónico
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={styles.input}
-              placeholder="tu@email.com"
-            />
-          </div>
-
-          <div className={styles.inputGroup}>
-            <label htmlFor="password" className={styles.label}>
-              Contraseña
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={styles.input}
-              placeholder="••••••••"
-            />
-          </div>
-
-          {error && (
-            <div className={styles.error}>
-              {error}
+      <div>
+        <div className={styles.appName}>Kapelle</div>
+        <div className={styles.loginCard}>
+          <h1 className={styles.title}>Iniciar Sesión</h1>
+          
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.inputGroup}>
+              <label htmlFor="email" className={styles.label}>
+                Correo Electrónico
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={styles.input}
+                placeholder="tu@email.com"
+              />
             </div>
-          )}
 
-          <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={loading}
-          >
-            {loading ? 'Cargando...' : 'Iniciar Sesión'}
-          </button>
-        </form>
+            <div className={styles.inputGroup}>
+              <label htmlFor="password" className={styles.label}>
+                Contraseña
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={styles.input}
+                placeholder="••••••••"
+              />
+            </div>
 
-        <div className={styles.footer}>
-          <a href="/forgot-password" className={styles.link}>
-            ¿Olvidaste tu contraseña?
-          </a>
+            {error && (
+              <div className={styles.error}>
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={loading}
+            >
+              {loading ? 'Cargando...' : 'Iniciar Sesión'}
+            </button>
+          </form>
+
+          <div className={styles.footer}>
+            <a href="/forgot-password" className={styles.link}>
+              ¿Olvidaste tu contraseña?
+            </a>
+            <div>
+              <span className={styles.span}>¿No tenes cuenta?</span>{' '}
+              <button
+                onClick={() => router.push('/register')}
+                className={styles.link}
+                type="button"
+              >
+                Regístrate aquí
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

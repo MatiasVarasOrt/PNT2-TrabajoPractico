@@ -6,8 +6,10 @@ import styles from "./SidebarNav.module.css";
 
 const navItems = [
   { label: "Inicio", href: "/", icon: "♪" },
+  { label: "General", href: "/general", icon: "★" },
   { label: "Mi Biblioteca", href: "/library", icon: "♫" },
-  { label: "Artistas", href: "/artists", icon: "♬" },
+  { label: "Playlists", href: "/playlist", icon: "♬" },
+  { label: "Artistas", href: "/artists", icon: "🧑‍🎤" },
 ];
 
 export default function SidebarNav() {
@@ -15,7 +17,7 @@ export default function SidebarNav() {
 
   return (
     <nav className={styles.sidebar}>
-      <div className={styles.logo}>MusicHub</div>
+      <div className={styles.logo}>Kapelle</div>
       <ul className={styles.list}>
         {navItems.map((item) => {
           const isActive =
