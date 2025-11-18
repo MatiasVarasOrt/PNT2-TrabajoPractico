@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import ArtistCard from "@/components/ArtistCard";
 import {
@@ -15,16 +14,13 @@ import styles from "../page.module.css";
 
 export default function ArtistsPage() {
   const [artists, setArtists] = useState([]);
-  const [error, setError] = useState(null);
-  const router = useRouter();
 
   const fetchArtists = async () => {
     try {
       const data = await getAllArtists();
       setArtists(data);
     } catch (err) {
-      setError("No se pudieron cargar los artistas.");
-      console.error(err);
+      console.error("Error al cargar artistas:", err);
     }
   };
 

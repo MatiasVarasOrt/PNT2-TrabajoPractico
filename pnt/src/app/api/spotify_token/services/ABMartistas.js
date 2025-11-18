@@ -61,10 +61,10 @@ export const updateArtist = async (id, data) => {
 
 export const deleteArtist = async (id) => {
   try {
-    // Primero obtener todas las canciones del artista
+    
     const songs = await getArtistSongs(id);
     
-    // Eliminar cada canción
+    
     if (songs && songs.length > 0) {
       for (const song of songs) {
         try {
