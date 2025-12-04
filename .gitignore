@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-pnt/node_modules
+/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -14,8 +14,7 @@ pnt/node_modules
 /coverage
 
 # next.js
-pnt/.next/types
-pnt/.next
+/.next/
 /out/
 
 # production
@@ -32,7 +31,10 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-pnt/.env
+.env
+.env*.local
+.env.development
+.env.production
 
 # vercel
 .vercel
@@ -40,3 +42,38 @@ pnt/.env
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDEs and editors
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/tasks.json
+!/.vscode/launch.json
+!/.vscode/extensions.json
+/.idea
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# OS
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Temporary folders
+tmp/
+temp/
