@@ -7,7 +7,7 @@ import { useState } from "react";
 import Image from "next/image";
 import styles from "./TopListSection.module.css";
 
-import AddToPlaylistModal from "./AddToPlaylistModal";
+import AddToPlaylistModal from "@/components/playlist/AddToPlaylistModal";
 
 export default function TopListSection({
   title,

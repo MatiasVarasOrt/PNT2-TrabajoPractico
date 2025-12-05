@@ -1,16 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import DashboardLayout from "@/components/DashboardLayout";
-import ArtistCard from "@/components/ArtistCard";
+import ArtistCard from "@/components/artists/ArtistCard";
 import {
   getAllArtists,
   createArtist,
   updateArtist,
   deleteArtist,
-} from "@/app/api/spotify_token/services/ABMartistas";
+} from "@/services/api/artistService";
 import styles from "../page.module.css";
-
 
 export default function ArtistsPage() {
   const [artists, setArtists] = useState([]);
@@ -31,15 +29,16 @@ export default function ArtistsPage() {
   const handleCreate = () => {
     (async () => {
       const name = prompt("Nombre del artista:");
-      if (name === null) return; 
+      if (name === null) return;
       const trimmedName = name.trim();
       if (!trimmedName) {
         alert("El nombre no puede estar vacío.");
         return;
       }
 
-      const image = prompt("URL de imagen (dejar vacío para no establecer):", "") || "";
-      if (image === null) return; 
+      const image =
+        prompt("URL de imagen (dejar vacío para no establecer):", "") || "";
+      if (image === null) return;
 
       const newArtist = {
         name: trimmedName,
@@ -53,7 +52,9 @@ export default function ArtistsPage() {
         alert("Artista creado correctamente.");
       } catch (err) {
         console.error("Error al crear artista:\n", err);
-        alert("No se pudo crear el artista. Revisa la consola para más detalles.");
+        alert(
+          "No se pudo crear el artista. Revisa la consola para más detalles."
+        );
       }
     })();
   };
@@ -62,7 +63,10 @@ export default function ArtistsPage() {
     const newName = prompt("Editar nombre del artista:", artist.name);
     if (newName === null) return;
 
-    const newImage = prompt("Editar URL de imagen (dejar vacío para mantener la actual):", artist.image || "");
+    const newImage = prompt(
+      "Editar URL de imagen (dejar vacío para mantener la actual):",
+      artist.image || ""
+    );
     if (newImage === null) return;
 
     const updated = {
@@ -89,48 +93,46 @@ export default function ArtistsPage() {
 
   try {
     return (
-      <DashboardLayout>
-        <div className={styles.page}>
-          <div className={styles.shell}>
-            <main className={styles.main}>
-              <header className={styles.hero}>
-                <p className={styles.eyebrow}>Kapelle</p>
-                <h1>Artistas</h1>
-                <p className={styles.description}>
-                  Estos son los artistas más relevantes del momento, junto con
-                  sus canciones más populares.
-                </p>
-                <button onClick={handleCreate} className={styles.createButton}>Crear Artista</button>
-              </header>
+      <div className={styles.page}>
+        <div className={styles.shell}>
+          <main className={styles.main}>
+            <header className={styles.hero}>
+              <p className={styles.eyebrow}>Kapelle</p>
+              <h1>Artistas</h1>
+              <p className={styles.description}>
+                Estos son los artistas más relevantes del momento, junto con sus
+                canciones más populares.
+              </p>
+              <button onClick={handleCreate} className={styles.createButton}>
+                Crear Artista
+              </button>
+            </header>
 
-              <div className={styles.sections}>
-                {artists.map((artist) => (
-                  <ArtistCard
-                    key={artist.id}
-                    artist={artist}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                  />
-                ))}
-              </div>
-            </main>
-          </div>
+            <div className={styles.sections}>
+              {artists.map((artist) => (
+                <ArtistCard
+                  key={artist.id}
+                  artist={artist}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          </main>
         </div>
-      </DashboardLayout>
+      </div>
     );
   } catch (error) {
     console.error("Error al cargar la página de artistas:", error || e);
     return (
-      <DashboardLayout>
-        <div className={styles.page}>
-          <main className={styles.main}>
-            <div className={styles.emptyState}>
-              <h1>{error || "Error al cargar los artistas"}</h1>
-              <p>No se pudo obtener la información desde Kapelle.</p>
-            </div>
-          </main>
-        </div>
-      </DashboardLayout>
+      <div className={styles.page}>
+        <main className={styles.main}>
+          <div className={styles.emptyState}>
+            <h1>{error || "Error al cargar los artistas"}</h1>
+            <p>No se pudo obtener la información desde Kapelle.</p>
+          </div>
+        </main>
+      </div>
     );
   }
 }

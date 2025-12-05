@@ -1,6 +1,6 @@
 // app/api/spotify/token/route.ts
 import { NextResponse } from "next/server";
-import Settings from "../../../settings";
+import Settings from "@/config/settings";
 
 let accessToken = "";
 let expiresAt = 0;
@@ -50,10 +50,10 @@ export async function GET() {
       expires_in: Math.max(0, expiresAt - now),
     };
 
-    return NextResponse.json(
-      payload,
-      { status: 200, headers: { "Cache-Control": "no-store" } }
-    );
+    return NextResponse.json(payload, {
+      status: 200,
+      headers: { "Cache-Control": "no-store" },
+    });
   } catch (error) {
     console.error("[api/spotify_token] Token fetch failed", error);
     return NextResponse.json(

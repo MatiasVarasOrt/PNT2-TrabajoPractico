@@ -1,16 +1,15 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import DashboardLayout from "@/components/DashboardLayout";
-import TopListSection from "@/components/TopListSection";
+import TopListSection from "@/components/shared/TopListSection";
 import styles from "../page.module.css";
 import {
   obtenerCanciones,
   crearCancion,
   eliminarCancion,
   actualizarCancion,
-} from "@/app/api/services/ABMcanciones";
-import { getAllArtists } from "@/app/api/spotify_token/services/ABMartistas";
+} from "@/services/api/songService";
+import { getAllArtists } from "@/services/api/artistService";
 
 export default function GeneralPage() {
   const [songs, setSongs] = useState([]);
@@ -45,7 +44,6 @@ export default function GeneralPage() {
         }
       });
 
-
       const normalizedSongs = (songsResponse ?? []).map((song, index) => {
         const resolveSongArtistId = () => {
           const rawId =
@@ -63,7 +61,10 @@ export default function GeneralPage() {
         };
 
         const artistId = resolveSongArtistId();
-        const directArtistName = typeof song?.artist === "string" && song.artist.length > 0 ? song.artist : null;
+        const directArtistName =
+          typeof song?.artist === "string" && song.artist.length > 0
+            ? song.artist
+            : null;
 
         const lookupArtistName = artistId ? artistMap.get(artistId) : null;
 
@@ -78,7 +79,8 @@ export default function GeneralPage() {
 
         return {
           id: song?.id ?? `song-${index}`,
-          name: song?.name ?? song?.title ?? song?.titulo ?? "Canción sin nombre",
+          name:
+            song?.name ?? song?.title ?? song?.titulo ?? "Canción sin nombre",
           artist: resolvedArtistName,
           subtitle: song?.album ?? song?.genero ?? undefined,
           image: song?.image ?? song?.cover ?? song?.portada ?? null,
@@ -196,75 +198,71 @@ export default function GeneralPage() {
   };
 
   return (
-    <DashboardLayout>
-      <div className={styles.page}>
-        <div className={styles.shell}>
-          <main className={styles.main}>
-            <header className={styles.hero}>
-              <p className={styles.eyebrow}>Kapelle</p>
-              <h1>General</h1>
-              <p className={styles.description}>
-                Reúne y crea tus canciones favoritas usando el mismo estilo que en
-                la página de inicio.
-              </p>
-              <form className={styles.songForm} onSubmit={handleCreateSong}>
-                <input
-                  type="text"
-                  placeholder="Nombre de la canción"
-                  value={newSong.name}
-                  onChange={handleNewSongChange("name")}
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Artista"
-                  value={newSong.artist}
-                  onChange={handleNewSongChange("artist")}
-                />
-                <input
-                  type="text"
-                  placeholder="Álbum (opcional)"
-                  value={newSong.album}
-                  onChange={handleNewSongChange("album")}
-                />
-                <input
-                  type="text"
-                  placeholder="URL de portada (opcional)"
-                  value={newSong.image}
-                  onChange={handleNewSongChange("image")}
-                />
-                <button type="submit" className={styles.songFormButton}>
-                  Crear canción
-                </button>
-              </form>
-            </header>
-
-            {loading && (
-              <p style={{ padding: "1rem" }}>Cargando canciones...</p>
-            )}
-
-            {error && !loading && (
-              <div className={styles.emptyState}>
-                <h2>{error}</h2>
-                <button className={styles.createButton} onClick={fetchSongs}>
-                  Reintentar
-                </button>
-              </div>
-            )}
-
-            {!loading && !error && (
-              <TopListSection
-                title="Listado general de canciones"
-                items={songs}
-                type ="track"
-                accentColor="#2ecc71"
-                onEdit={handleEditSong}
-                onDelete={handleDeleteSong}
+    <div className={styles.page}>
+      <div className={styles.shell}>
+        <main className={styles.main}>
+          <header className={styles.hero}>
+            <p className={styles.eyebrow}>Kapelle</p>
+            <h1>General</h1>
+            <p className={styles.description}>
+              Reúne y crea tus canciones favoritas usando el mismo estilo que en
+              la página de inicio.
+            </p>
+            <form className={styles.songForm} onSubmit={handleCreateSong}>
+              <input
+                type="text"
+                placeholder="Nombre de la canción"
+                value={newSong.name}
+                onChange={handleNewSongChange("name")}
+                required
               />
-            )}
-          </main>
-        </div>
+              <input
+                type="text"
+                placeholder="Artista"
+                value={newSong.artist}
+                onChange={handleNewSongChange("artist")}
+              />
+              <input
+                type="text"
+                placeholder="Álbum (opcional)"
+                value={newSong.album}
+                onChange={handleNewSongChange("album")}
+              />
+              <input
+                type="text"
+                placeholder="URL de portada (opcional)"
+                value={newSong.image}
+                onChange={handleNewSongChange("image")}
+              />
+              <button type="submit" className={styles.songFormButton}>
+                Crear canción
+              </button>
+            </form>
+          </header>
+
+          {loading && <p style={{ padding: "1rem" }}>Cargando canciones...</p>}
+
+          {error && !loading && (
+            <div className={styles.emptyState}>
+              <h2>{error}</h2>
+              <button className={styles.createButton} onClick={fetchSongs}>
+                Reintentar
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && (
+            <TopListSection
+              title="Listado general de canciones"
+              items={songs}
+              type="track"
+              accentColor="#2ecc71"
+              onEdit={handleEditSong}
+              onDelete={handleDeleteSong}
+            />
+          )}
+        </main>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

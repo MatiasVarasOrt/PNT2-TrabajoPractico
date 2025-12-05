@@ -1,5 +1,5 @@
 import "server-only";
-import Settings from "@/settings";
+import Settings from "@/config/settings";
 
 const SPOTIFY_API_BASE = Settings.spotifyApiBase;
 const INTERNAL_TOKEN_PATH = Settings.internalTokenPath;
@@ -7,15 +7,15 @@ const SETTINGS_MARKET = Settings.spotifyMarket?.trim();
 const DEFAULT_MARKET =
   (SETTINGS_MARKET && SETTINGS_MARKET.length > 0
     ? SETTINGS_MARKET
-    : process.env.SPOTIFY_MARKET?.trim() ||
-      process.env.MARKET?.trim()) || "ES";
+    : process.env.SPOTIFY_MARKET?.trim() || process.env.MARKET?.trim()) || "ES";
 
 const MARKET_CODE = (DEFAULT_MARKET || "ES").toUpperCase();
 
 let cachedToken = null;
 let cachedTokenExpiry = 0;
 
-function resolveInternalUrl(pathname) {  // Devuelve bien la URL absoluta para el endpoint interno dado el pathname
+function resolveInternalUrl(pathname) {
+  // Devuelve bien la URL absoluta para el endpoint interno dado el pathname
   if (/^https?:\/\//i.test(pathname)) {
     return pathname;
   }
@@ -31,14 +31,13 @@ function resolveInternalUrl(pathname) {  // Devuelve bien la URL absoluta para e
     return new URL(pathname, baseWithProtocol).toString();
   }
 
- 
   const port = process.env.PORT ?? 3000;
   return new URL(pathname, `http://127.0.0.1:${port}`).toString();
 }
 
-
-async function fetchAccessToken(forceRefresh = false) { // Obtiene el token de acceso, usando caché si es posible.
-                                                        // Si esta vencido, lo renueva.
+async function fetchAccessToken(forceRefresh = false) {
+  // Obtiene el token de acceso, usando caché si es posible.
+  // Si esta vencido, lo renueva.
   const now = Math.floor(Date.now() / 1000);
   if (!forceRefresh && cachedToken && now < cachedTokenExpiry - 30) {
     return cachedToken;
@@ -59,7 +58,9 @@ async function fetchAccessToken(forceRefresh = false) { // Obtiene el token de a
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Token endpoint failed: ${response.status} ${response.statusText} - ${body}`);
+    throw new Error(
+      `Token endpoint failed: ${response.status} ${response.statusText} - ${body}`
+    );
   }
 
   const payload = await response.json();
@@ -79,9 +80,10 @@ async function fetchAccessToken(forceRefresh = false) { // Obtiene el token de a
 }
 
 function buildSpotifyUrl(pathname, searchParams) {
-  const url = pathname.startsWith("http://") || pathname.startsWith("https://")
-    ? new URL(pathname)
-    : new URL(pathname, SPOTIFY_API_BASE);
+  const url =
+    pathname.startsWith("http://") || pathname.startsWith("https://")
+      ? new URL(pathname)
+      : new URL(pathname, SPOTIFY_API_BASE);
 
   if (searchParams) {
     Object.entries(searchParams).forEach(([key, value]) => {
@@ -114,7 +116,8 @@ export async function spotifyFetch(
       const isFormData =
         typeof FormData !== "undefined" && body instanceof FormData;
       const isUrlParams =
-        typeof URLSearchParams !== "undefined" && body instanceof URLSearchParams;
+        typeof URLSearchParams !== "undefined" &&
+        body instanceof URLSearchParams;
 
       let requestBody = body;
       if (body && !isFormData && !isUrlParams) {
@@ -159,7 +162,6 @@ export async function spotifyFetch(
         // ignore
       }
 
-     
       console.error({
         attempt,
         method,
@@ -179,8 +181,6 @@ export async function spotifyFetch(
   }
   throw lastError ?? new Error("Spotify request failed");
 }
-
-
 
 export async function getTopArtists({
   limit = 5,
@@ -211,15 +211,12 @@ export async function getTopArtists({
   }));
 }
 
-//este endpoint no es exactamente no es que ddevuelve el top de artistas, siemplemente para ese genero 
+//este endpoint no es exactamente no es que ddevuelve el top de artistas, siemplemente para ese genero
 // genre:pop. Spotify devuelve los artistas que mejor coinciden con esa búsqueda (ordenados por relevancia), no necesariamente los más escuchados del momento
 // para saber cual usar, habría que usar la API de Spotify con autenticación de usuario, y obtener los artistas top del usuario autenticado.
 // o tambien buscar en un Playlist concreta de Spotify que contenga los artistas más populares del momento en ese género.
 
-export async function getTopAlbums({
-  limit = 5,
-  country = MARKET_CODE,
-} = {}) {
+export async function getTopAlbums({ limit = 5, country = MARKET_CODE } = {}) {
   const normalizedCountry =
     typeof country === "string" && country.length > 0
       ? country.trim().toUpperCase()
@@ -270,7 +267,10 @@ export async function getTopTracks({
     const artistId = uniqueArtistIds[index];
 
     if (result.status !== "fulfilled") {
-      console.error(`[spotify] Top tracks fetch failed for artist ${artistId}`, result.reason);
+      console.error(
+        `[spotify] Top tracks fetch failed for artist ${artistId}`,
+        result.reason
+      );
       return;
     }
 

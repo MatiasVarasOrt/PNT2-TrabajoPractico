@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import authService from '../services/authService';
+import authService from '@/services/api/authService';
 
 const AuthContext = createContext()
 

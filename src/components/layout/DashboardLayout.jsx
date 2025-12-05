@@ -1,8 +1,8 @@
 'use client'
 
-import SidebarNav from '@/components/SidebarNav'
-import ProfilePanel from '@/components/ProfilePanel'
-import ProtectedRoute from '@/components/ProtectedRoute'
+import SidebarNav from '@/components/layout/SidebarNav'
+import ProfilePanel from '@/components/profile/ProfilePanel'
+import ProtectedRoute from '@/components/auth/ProtectedRoute'
 
 export default function DashboardLayout({ children }) {
   return (

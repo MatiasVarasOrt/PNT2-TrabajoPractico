@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import TopListSection from "@/components/TopListSection";
-import { getArtistSongs } from "@/app/api/spotify_token/services/ABMartistas";
+import TopListSection from "@/components/shared/TopListSection";
+import { getArtistSongs } from "@/services/api/artistService";
 import styles from "@/app/page.module.css";
 
 export default function ArtistCard({ artist, onEdit, onDelete }) {

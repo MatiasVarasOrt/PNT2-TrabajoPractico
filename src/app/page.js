@@ -1,7 +1,10 @@
-
-import DashboardLayout from "@/components/DashboardLayout";
-import TopListSection from "@/components/TopListSection";
-import { getTopAlbums, getTopArtists, getTopTracks } from "@/lib/spotifyClient";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import TopListSection from "@/components/shared/TopListSection";
+import {
+  getTopAlbums,
+  getTopArtists,
+  getTopTracks,
+} from "@/services/external/spotifyClient";
 import styles from "./page.module.css";
 
 export default async function Home() {

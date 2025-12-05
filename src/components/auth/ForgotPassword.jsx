@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './Login.module.css';
-import authService from '../app/services/authService';
+import authService from '@/services/api/authService';
 
 export default function ForgotPassword() {
   const router = useRouter();
