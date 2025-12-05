@@ -11,7 +11,7 @@ import {
 } from "@/services/api/songService";
 import { getAllArtists } from "@/services/api/artistService";
 
-export default function GeneralPage() {
+export default function SongsPage() {
   const [songs, setSongs] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -203,10 +203,9 @@ export default function GeneralPage() {
         <main className={styles.main}>
           <header className={styles.hero}>
             <p className={styles.eyebrow}>Kapelle</p>
-            <h1>General</h1>
+            <h1>Canciones</h1>
             <p className={styles.description}>
-              Reúne y crea tus canciones favoritas usando el mismo estilo que en
-              la página de inicio.
+              Gestiona y crea tus canciones favoritas.
             </p>
             <form className={styles.songForm} onSubmit={handleCreateSong}>
               <input
