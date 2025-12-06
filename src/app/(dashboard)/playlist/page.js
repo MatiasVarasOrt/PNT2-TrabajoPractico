@@ -40,38 +40,71 @@ export default function PlaylistsPage() {
               </div>
             )}
 
-            <ul style={{ marginTop: "1.2rem", listStyle: "none", padding: 0 }}>
-              {playlists.map((p) => (
-                <li
-                  key={p.id}
-                  style={{
-                    marginBottom: "0.9rem",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                  }}
-                >
-                  {/* Linkeo a la página individual de la playlist */}
-                  <Link
-                    href={`/playlist/${p.id}`}
-                    style={{ fontWeight: "bold", marginRight: "1rem" }}
+            {playlists.length > 0 && (
+              <ul
+                style={{
+                  listStyle: "none",
+                  padding: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
+              >
+                {playlists.map((p) => (
+                  <li
+                    key={p.id}
+                    style={{
+                      background: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      borderRadius: "12px",
+                      padding: "16px 20px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      transition: "background 0.2s ease",
+                    }}
                   >
-                    {p.name}
-                  </Link>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        flex: 1,
+                      }}
+                    >
+                      <Link
+                        href={`/playlist/${p.id}`}
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "16px",
+                          color: "#f5f5f5",
+                          textDecoration: "none",
+                          transition: "color 0.2s ease",
+                        }}
+                      >
+                        {p.name}
+                      </Link>
 
-                  <span style={{ opacity: 0.7 }}>
-                    ({p.songs.length} canciones)
-                  </span>
+                      <span
+                        style={{
+                          color: "rgba(255, 255, 255, 0.6)",
+                          fontSize: "14px",
+                        }}
+                      >
+                        ({p.songs.length} canciones)
+                      </span>
+                    </div>
 
-                  <button
-                    onClick={() => deletePlaylist(p.id)}
-                    className={styles.deleteButton}
-                  >
-                    Eliminar
-                  </button>
-                </li>
-              ))}
-            </ul>
+                    <button
+                      onClick={() => deletePlaylist(p.id)}
+                      className={styles.deleteButton}
+                    >
+                      Eliminar
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           <CreatePlaylistModal
