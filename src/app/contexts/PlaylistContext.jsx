@@ -7,6 +7,7 @@ const PlaylistContext = createContext();
 export function PlaylistProvider({ children }) {
   const [playlists, setPlaylists] = useState([]);
 
+  // Crea una nueva playlist con id único
   function createPlaylist(name, description = "") {
     const newPlaylist = {
       id: crypto.randomUUID(),
