@@ -203,3 +203,60 @@
 .noDataMessage {
   margin-top: 48px;
 }
+
+/* Estilos para listas de items (biblioteca, playlists) */
+.itemList {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.itemCard {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition: background 0.2s ease;
+}
+
+.itemCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.itemContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.itemImage {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.itemTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.itemSubtitleText {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}

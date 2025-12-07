@@ -25,20 +25,35 @@ export default function LibraryPage() {
 
           {libraryItems.length > 0 && (
             <div className={styles.sections}>
-              {libraryItems.map((item) => (
-                <div key={item.id} className={styles.card}>
-                  <p>
-                    <strong>{item.name}</strong>
-                  </p>
-                  <p style={{ opacity: 0.7 }}>{item.artist}</p>
-                  <button
-                    className={styles.deleteButton}
-                    onClick={() => removeFromLibrary(item.id)}
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              ))}
+              <ul className={styles.itemList}>
+                {libraryItems.map((item) => (
+                  <li key={item.id} className={styles.itemCard}>
+                    <div className={styles.itemContent}>
+                      {item.image && (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className={styles.itemImage}
+                        />
+                      )}
+                      <div className={styles.itemInfo}>
+                        <strong className={styles.itemTitle}>
+                          {item.name}
+                        </strong>
+                        <span className={styles.itemSubtitleText}>
+                          {item.artist}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => removeFromLibrary(item.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </main>
