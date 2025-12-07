@@ -41,7 +41,7 @@ export default function ArtistCard({ artist, onEdit, onDelete }) {
           <p className={styles.artistDescription}>{description}</p>
           <div className={styles.buttonGroup}>
             <button onClick={() => onEdit(artist)} className={styles.editButton}>Editar</button>
-            <button onClick={() => onDelete(artist.id)} className={styles.deleteButton}>Eliminar</button>
+            <button onClick={() => onDelete(artist)} className={styles.deleteButton}>Eliminar</button>
           </div>
         </div>
       </div>
