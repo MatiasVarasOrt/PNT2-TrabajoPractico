@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import ArtistCard from "@/components/artists/ArtistCard";
+import CreateArtistModal from "@/components/artists/CreateArtistModal";
+import EditArtistModal from "@/components/artists/EditArtistModal";
 import {
   getAllArtists,
   createArtist,
@@ -12,6 +14,13 @@ import styles from "../page.module.css";
 
 export default function ArtistsPage() {
   const [artists, setArtists] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [artistToEdit, setArtistToEdit] = useState(null);
+
+  useEffect(() => {
+    fetchArtists();
+  }, []);
 
   const fetchArtists = async () => {
     try {
@@ -22,62 +31,43 @@ export default function ArtistsPage() {
     }
   };
 
-  useEffect(() => {
-    fetchArtists();
-  }, []);
-
-  const handleCreate = () => {
-    (async () => {
-      const name = prompt("Nombre del artista:");
-      if (name === null) return;
-      const trimmedName = name.trim();
-      if (!trimmedName) {
-        alert("El nombre no puede estar vacío.");
-        return;
-      }
-
-      const image =
-        prompt("URL de imagen (dejar vacío para no establecer):", "") || "";
-      if (image === null) return;
-
-      const newArtist = {
-        name: trimmedName,
-        image: image.trim() === "" ? undefined : image.trim(),
-        followers: 0,
-      };
-
-      try {
-        await createArtist(newArtist);
-        await fetchArtists();
-        alert("Artista creado correctamente.");
-      } catch (err) {
-        console.error("Error al crear artista:\n", err);
-        alert(
-          "No se pudo crear el artista. Revisa la consola para más detalles."
-        );
-      }
-    })();
-  };
-
-  const handleEdit = async (artist) => {
-    const newName = prompt("Editar nombre del artista:", artist.name);
-    if (newName === null) return;
-
-    const newImage = prompt(
-      "Editar URL de imagen (dejar vacío para mantener la actual):",
-      artist.image || ""
-    );
-    if (newImage === null) return;
-
-    const updated = {
-      name: newName.trim() || artist.name,
-      image: newImage.trim() === "" ? artist.image : newImage.trim(),
-      followers: artist.followers || 0,
+  const handleCreate = async (data) => {
+    const newArtist = {
+      name: data.name,
+      image: data.image,
+      followers: 0,
     };
 
     try {
-      await updateArtist(artist.id, updated);
+      await createArtist(newArtist);
       await fetchArtists();
+    } catch (err) {
+      console.error("Error al crear artista:", err);
+      alert(
+        "No se pudo crear el artista. Revisa la consola para más detalles."
+      );
+    }
+  };
+
+  const handleEdit = (artist) => {
+    setArtistToEdit(artist);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (data) => {
+    if (!artistToEdit) return;
+
+    const updated = {
+      name: data.name,
+      image: data.image,
+      followers: artistToEdit.followers || 0,
+    };
+
+    try {
+      await updateArtist(artistToEdit.id, updated);
+      await fetchArtists();
+      setIsEditModalOpen(false);
+      setArtistToEdit(null);
     } catch (err) {
       console.error("Error al actualizar artista:", err);
       alert("No se pudo guardar el artista. Revisa la consola.");
@@ -103,7 +93,10 @@ export default function ArtistsPage() {
                 Estos son los artistas más relevantes del momento, junto con sus
                 canciones más populares.
               </p>
-              <button onClick={handleCreate} className={styles.createButton}>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className={styles.createButton}
+              >
                 Crear Artista
               </button>
             </header>
@@ -120,6 +113,22 @@ export default function ArtistsPage() {
             </div>
           </main>
         </div>
+
+        <CreateArtistModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onCreate={handleCreate}
+        />
+
+        <EditArtistModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setArtistToEdit(null);
+          }}
+          onEdit={handleEditSubmit}
+          artist={artistToEdit}
+        />
       </div>
     );
   } catch (error) {
