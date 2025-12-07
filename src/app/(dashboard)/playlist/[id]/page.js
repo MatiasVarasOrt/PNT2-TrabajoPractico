@@ -1,12 +1,19 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { usePlaylists } from "@/app/contexts/PlaylistContext";
+import ConfirmDeleteModal from "@/components/shared/ConfirmDeleteModal";
 import styles from "../../page.module.css";
 
 export default function PlaylistDetailPage() {
   const { id } = useParams();
+  const router = useRouter();
   const { playlists, removeFromPlaylist, deletePlaylist } = usePlaylists();
+  const [isDeletePlaylistModalOpen, setIsDeletePlaylistModalOpen] =
+    useState(false);
+  const [isDeleteSongModalOpen, setIsDeleteSongModalOpen] = useState(false);
+  const [songToDelete, setSongToDelete] = useState(null);
 
   const playlist = playlists.find((p) => p.id === id);
 
@@ -40,7 +47,7 @@ export default function PlaylistDetailPage() {
 
             <button
               className={styles.deleteButton}
-              onClick={() => deletePlaylist(playlist.id)}
+              onClick={() => setIsDeletePlaylistModalOpen(true)}
             >
               Eliminar playlist
             </button>
@@ -108,7 +115,10 @@ export default function PlaylistDetailPage() {
                     </div>
                     <button
                       className={styles.deleteButton}
-                      onClick={() => removeFromPlaylist(playlist.id, song.id)}
+                      onClick={() => {
+                        setSongToDelete(song);
+                        setIsDeleteSongModalOpen(true);
+                      }}
                     >
                       Quitar
                     </button>
@@ -119,6 +129,33 @@ export default function PlaylistDetailPage() {
           </section>
         </main>
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={isDeletePlaylistModalOpen}
+        onClose={() => setIsDeletePlaylistModalOpen(false)}
+        onConfirm={() => {
+          deletePlaylist(playlist.id);
+          router.push("/playlist");
+        }}
+        itemName={playlist.name}
+        itemType="esta playlist"
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteSongModalOpen}
+        onClose={() => {
+          setIsDeleteSongModalOpen(false);
+          setSongToDelete(null);
+        }}
+        onConfirm={() => {
+          if (songToDelete) {
+            removeFromPlaylist(playlist.id, songToDelete.id);
+            setSongToDelete(null);
+          }
+        }}
+        itemName={songToDelete?.name}
+        itemType="esta canción de la playlist"
+      />
     </div>
   );
 }

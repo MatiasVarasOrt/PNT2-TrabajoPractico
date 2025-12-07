@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import TopListSection from "@/components/shared/TopListSection";
 import CreateSongModal from "@/components/songs/CreateSongModal";
 import EditSongModal from "@/components/songs/EditSongModal";
+import ConfirmDeleteModal from "@/components/shared/ConfirmDeleteModal";
 import styles from "../page.module.css";
 import {
   obtenerCanciones,
@@ -21,6 +22,8 @@ export default function SongsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [songToEdit, setSongToEdit] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [songToDelete, setSongToDelete] = useState(null);
 
   const fetchSongs = useCallback(async () => {
     try {
@@ -105,21 +108,21 @@ export default function SongsPage() {
       alert("Esta canción no tiene un ID válido.");
       return;
     }
+    setSongToDelete(song);
+    setIsDeleteModalOpen(true);
+  };
 
-    if (!confirm(`¿Eliminar ${song.name}?`)) {
-      return;
+  const confirmDelete = async () => {
+    if (!songToDelete) return;
+
+    try {
+      await eliminarCancion(songToDelete.id);
+      await fetchSongs();
+      setSongToDelete(null);
+    } catch (err) {
+      console.error("No se pudo eliminar la canción:", err);
+      alert("No se pudo eliminar la canción");
     }
-
-    (async () => {
-      try {
-        await eliminarCancion(song.id);
-        await fetchSongs();
-        alert("Canción eliminada correctamente.");
-      } catch (err) {
-        console.error("No se pudo eliminar la canción:", err);
-        alert("No se pudo eliminar la canción");
-      }
-    })();
   };
 
   return (
@@ -180,6 +183,17 @@ export default function SongsPage() {
         }}
         onEdit={handleEditSubmit}
         song={songToEdit}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSongToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        itemName={songToDelete?.name}
+        itemType="esta canción"
       />
     </div>
   );

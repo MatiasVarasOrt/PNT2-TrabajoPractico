@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import ArtistCard from "@/components/artists/ArtistCard";
 import CreateArtistModal from "@/components/artists/CreateArtistModal";
 import EditArtistModal from "@/components/artists/EditArtistModal";
+import ConfirmDeleteModal from "@/components/shared/ConfirmDeleteModal";
 import {
   getAllArtists,
   createArtist,
@@ -17,6 +18,8 @@ export default function ArtistsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [artistToEdit, setArtistToEdit] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [artistToDelete, setArtistToDelete] = useState(null);
 
   useEffect(() => {
     fetchArtists();
@@ -74,10 +77,21 @@ export default function ArtistsPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (confirm("¿Estás seguro de que quieres eliminar este artista?")) {
-      await deleteArtist(id);
-      fetchArtists();
+  const handleDelete = (artist) => {
+    setArtistToDelete(artist);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!artistToDelete) return;
+
+    try {
+      await deleteArtist(artistToDelete.id);
+      await fetchArtists();
+      setArtistToDelete(null);
+    } catch (err) {
+      console.error("Error al eliminar artista:", err);
+      alert("No se pudo eliminar el artista.");
     }
   };
 
@@ -128,6 +142,17 @@ export default function ArtistsPage() {
           }}
           onEdit={handleEditSubmit}
           artist={artistToEdit}
+        />
+
+        <ConfirmDeleteModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            setArtistToDelete(null);
+          }}
+          onConfirm={confirmDelete}
+          itemName={artistToDelete?.name}
+          itemType="este artista"
         />
       </div>
     );

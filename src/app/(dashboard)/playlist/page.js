@@ -5,13 +5,28 @@ import { usePlaylists } from "@/app/contexts/PlaylistContext";
 import styles from "../page.module.css";
 import Link from "next/link";
 import CreatePlaylistModal from "@/components/playlist/CreatePlaylistModal";
+import ConfirmDeleteModal from "@/components/shared/ConfirmDeleteModal";
 
 export default function PlaylistsPage() {
   const { playlists, deletePlaylist, createPlaylist } = usePlaylists();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [playlistToDelete, setPlaylistToDelete] = useState(null);
 
   function handleCreate(name) {
     createPlaylist(name);
+  }
+
+  function handleDelete(playlist) {
+    setPlaylistToDelete(playlist);
+    setIsDeleteModalOpen(true);
+  }
+
+  function confirmDelete() {
+    if (playlistToDelete) {
+      deletePlaylist(playlistToDelete.id);
+      setPlaylistToDelete(null);
+    }
   }
 
   return (
@@ -96,7 +111,7 @@ export default function PlaylistsPage() {
                     </div>
 
                     <button
-                      onClick={() => deletePlaylist(p.id)}
+                      onClick={() => handleDelete(p)}
                       className={styles.deleteButton}
                     >
                       Eliminar
@@ -111,6 +126,17 @@ export default function PlaylistsPage() {
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             onCreate={(name) => handleCreate(name)}
+          />
+
+          <ConfirmDeleteModal
+            isOpen={isDeleteModalOpen}
+            onClose={() => {
+              setIsDeleteModalOpen(false);
+              setPlaylistToDelete(null);
+            }}
+            onConfirm={confirmDelete}
+            itemName={playlistToDelete?.name}
+            itemType="esta playlist"
           />
         </main>
       </div>
